@@ -1,0 +1,41 @@
+name: publish
+on: workflow_dispatch
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3.1.0
+        with:
+          path: jamie-provenance
+      - name: Setup node
+        uses: actions/setup-node@v3.5.1
+        with:
+          node-version: 16
+      - name: Clone npm
+        uses: actions/checkout@v3.1.0
+        with:
+          repository: npm/cli
+          ref: provenance
+          path: npm
+
+      - name: Build npm
+        run: |
+          cd npm
+          node . link
+      - name: Bump package versions
+        run: |
+          cd jamie-provenance
+          sed -i "s/1.0.0/1.${GITHUB_RUN_NUMBER}.${GITHUB_RUN_ATTEMPT}/" package.json
+      - name: Publish
+        run: |
+          cd jamie-provenance
+          echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' >> ./.npmrc
+          npm publish --access=public
+          git checkout -- .npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
