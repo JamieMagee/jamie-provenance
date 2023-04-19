@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
-    "url": "https://github.blog/2023-04-19-introducing-npm-package-provenance/"
+    "url": "git+https://github.com/JamieMagee/jamie-provenance"
   },
   "license": "ISC"
 }
